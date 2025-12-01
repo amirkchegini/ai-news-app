@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اخبار هوش مصنوعی | AI News</title>
+    <meta name="description" content="آخرین اخبار و پیشرفت‌های هوش مصنوعی به زبان فارسی">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0A68FF">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="AI News">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons Library -->
+    <link href="https://unpkg.com/lucide@latest/dist/umd/lucide.css" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- AI News Service -->
+    <script src="ai-news-service.js"></script>
+    
+    <style>
+        /* CSS Variables */
+        :root {
+            /* Primary Colors */
+            --primary-500: #0A68FF;
+            --primary-100: #E7F0FF;
+            --primary-700: #004DC8;
+            
+            /* Neutral Colors */
+            --background-page: #F8F9FA;
+            --background-surface: #FFFFFF;
+            --text-primary: #1C1E21;
+            --text-secondary: #65676B;
+            --border-subtle: #E4E6EB;
+            
+            /* Semantic Colors */
+            --success: #28a745;
+            --warning: #ffc107;
+            --error: #dc3545;
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-xxl: 48px;
+            
+            /* Border Radius */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 24px;
+            
+            /* Shadows */
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-fab: 0 8px 20px rgba(10, 104, 255, 0.25);
+        }
+        
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--background-page);
+            color: var(--text-primary);
+            line-height: 1.6;
+            direction: rtl;
+        }
+        
+        /* Layout */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-lg) 0;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .header p {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+        
+        /* Search Bar */
+        .search-container {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .search-bar {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-input {
+            width: 100%;
+            height: 48px;
+            padding: var(--spacing-md);
+            padding-right: 48px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+            background-color: var(--background-surface);
+            font-family: inherit;
+            font-size: 16px;
+            color: var(--text-primary);
+            transition: all 200ms ease-out;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(10, 104, 255, 0.2);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: var(--spacing-md);
+            color: var(--text-secondary);
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Category Chips */
+        .category-chips {
+            display: flex;
+            gap: var(--spacing-sm);
+            overflow-x: auto;
+            padding: var(--spacing-sm) 0;
+            margin-bottom: var(--spacing-lg);
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .category-chips::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .chip {
+            flex-shrink: 0;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background-color: var(--background-page);
+            color: var(--text-secondary);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 400;
+            border: none;
+            cursor: pointer;
+            transition: all 200ms ease-out;
+            min-height: 40px;
+        }
+        
+        .chip:hover {
+            transform: translateY(-1px);
+        }
+        
+        .chip.selected {
+            background-color: var(--primary-100);
+            color: var(--primary-500);
+            font-weight: 500;
+        }
+        
+        /* News Cards */
+        .news-grid {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        
+        .news-card {
+            background-color: var(--background-surface);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            transition: all 250ms ease-in-out;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        
+        .news-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+        
+        .news-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .news-category {
+            background-color: var(--primary-100);
+            color: var(--primary-500);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .news-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+        
+        .news-title {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-primary);
+        }
+        
+        .news-summary {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .news-source {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            color: var(--primary-500);
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 200ms ease-out;
+        }
+        
+        .news-source:hover {
+            color: var(--primary-700);
+        }
+        
+        .news-source i {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: var(--spacing-md);
+            left: var(--spacing-md);
+            width: 56px;
+            height: 56px;
+            background-color: var(--primary-500);
+            border-radius: 50%;
+            border: none;
+            box-shadow: var(--shadow-fab);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 200ms ease-out;
+            z-index: 1000;
+        }
+        
+        .fab:hover {
+            background-color: var(--primary-700);
+            transform: scale(1.1);
+        }
+        
+        .fab.loading {
+            animation: spin 1s linear infinite;
+        }
+        
+        .fab i {
+            color: white;
+            width: 24px;
+            height: 24px;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Loading State */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: var(--spacing-xxl);
+            color: var(--text-secondary);
+        }
+        
+        .loading i {
+            width: 32px;
+            height: 32px;
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Error State */
+        .error {
+            text-align: center;
+            padding: var(--spacing-xxl);
+            color: var(--error);
+        }
+        
+        .retry-btn {
+            margin-top: var(--spacing-md);
+            padding: var(--spacing-sm) var(--spacing-lg);
+            background-color: var(--primary-500);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-family: inherit;
+            transition: background-color 200ms ease-out;
+        }
+        
+        .retry-btn:hover {
+            background-color: var(--primary-700);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-xxl);
+            color: var(--text-secondary);
+        }
+        
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            .container {
+                padding: var(--spacing-lg);
+            }
+            
+            .news-grid {
+                gap: var(--spacing-lg);
+            }
+        }
+        
+        /* PWA Install Button */
+        .pwa-install {
+            position: fixed;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+            background-color: var(--primary-500);
+            color: white;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .pwa-install.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- PWA Install Button -->
+    <button class="pwa-install" id="installBtn">
+        📱 نصب اپ
+    </button>
+    
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🤖 اخبار هوش مصنوعی</h1>
+            <p>آخرین پیشرفت‌ها و نوآوری‌های دنیای AI</p>
+        </header>
+        
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-bar">
+                <i class="search-icon" data-lucide="search"></i>
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    placeholder="جستجو در خبرها..."
+                    id="searchInput"
+                >
+            </div>
+        </div>
+        
+        <!-- Category Chips -->
+        <div class="category-chips" id="categoryChips">
+            <button class="chip selected" data-category="all">همه</button>
+            <button class="chip" data-category="chatgpt">ChatGPT</button>
+            <button class="chip" data-category="machine-learning">Machine Learning</button>
+            <button class="chip" data-category="robotics">Robotics</button>
+            <button class="chip" data-category="deep-learning">Deep Learning</button>
+            <button class="chip" data-category="computer-vision">Computer Vision</button>
+            <button class="chip" data-category="nlp">NLP</button>
+        </div>
+        
+        <!-- News Grid -->
+        <div class="news-grid" id="newsGrid">
+            <div class="loading" id="loadingState">
+                <i data-lucide="loader"></i>
+                <span>در حال بارگذاری خبرها...</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Refresh Button -->
+    <button class="fab" id="refreshBtn" title="به‌روزرسانی خبرها">
+        <i data-lucide="refresh-cw"></i>
+    </button>
+    
+    <script>
+        // News Data and API
+        const AI_NEWS_SOURCES = {
+            openai: {
+                name: "OpenAI",
+                url: "https://openai.com/blog/",
+                category: "chatgpt",
+                description: "آخرین خبرهای رسمی OpenAI"
+            },
+            mit: {
+                name: "MIT Technology Review",
+                url: "https://www.technologyreview.com/topic/artificial-intelligence/",
+                category: "machine-learning",
+                description: "تحلیل‌های تخصصی و عمیق"
+            },
+            google: {
+                name: "Google AI Blog",
+                url: "https://ai.googleblog.com/",
+                category: "deep-learning",
+                description: "پیشرفت‌های Google در AI"
+            },
+            deepmind: {
+                name: "DeepMind",
+                url: "https://deepmind.google/blog/",
+                category: "machine-learning",
+                description: "تحقیقات پیشرفته Google DeepMind"
+            },
+            techcrunch: {
+                name: "TechCrunch AI",
+                url: "https://techcrunch.com/category/artificial-intelligence/",
+                category: "machine-learning",
+                description: "اخبار صنعت و سرمایه‌گذاری AI"
+            }
+        };
+        
+
+        
+        // State Management
+        let currentNews = [];
+        let currentCategory = 'all';
+        let searchQuery = '';
+        let isLoading = false;
+        
+        // DOM Elements
+        const newsGrid = document.getElementById('newsGrid');
+        const searchInput = document.getElementById('searchInput');
+        const categoryChips = document.getElementById('categoryChips');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const loadingState = document.getElementById('loadingState');
+        
+        // Initialize App
+        async function initApp() {
+            setupEventListeners();
+            setupLucideIcons();
+            setupPWA();
+            await loadNews();
+        }
+        
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Search
+            searchInput.addEventListener('input', handleSearch);
+            
+            // Category filtering
+            categoryChips.addEventListener('click', handleCategoryClick);
+            
+            // Refresh
+            refreshBtn.addEventListener('click', handleRefresh);
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', handleKeyboard);
+        }
+        
+        // Setup Lucide Icons
+        function setupLucideIcons() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+        
+        // Setup PWA
+        function setupPWA() {
+            // Register service worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW registered:', registration);
+                    })
+                    .catch(error => {
+                        console.log('SW registration failed:', error);
+                    });
+            }
+            
+            // PWA install prompt
+            let deferredPrompt;
+            const installBtn = document.getElementById('installBtn');
+            
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installBtn.classList.add('show');
+            });
+            
+            installBtn.addEventListener('click', () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted the install prompt');
+                        }
+                        deferredPrompt = null;
+                        installBtn.classList.remove('show');
+                    });
+                }
+            });
+        }
+        
+        // Handle Search
+        function handleSearch(e) {
+            searchQuery = e.target.value.toLowerCase().trim();
+            filterAndRenderNews();
+        }
+        
+        // Handle Category Click
+        function handleCategoryClick(e) {
+            if (e.target.classList.contains('chip')) {
+                // Remove selected class from all chips
+                categoryChips.querySelectorAll('.chip').forEach(chip => {
+                    chip.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked chip
+                e.target.classList.add('selected');
+                
+                // Update current category
+                currentCategory = e.target.dataset.category;
+                filterAndRenderNews();
+            }
+        }
+        
+        // Handle Refresh
+        async function handleRefresh() {
+            if (isLoading) return;
+            
+            isLoading = true;
+            refreshBtn.classList.add('loading');
+            
+            try {
+                await loadNews(true);
+                showNotification('خبرها با موفقیت به‌روزرسانی شدند!', 'success');
+            } catch (error) {
+                showNotification('خطا در به‌روزرسانی خبرها', 'error');
+            } finally {
+                isLoading = false;
+                refreshBtn.classList.remove('loading');
+            }
+        }
+        
+        // Handle Keyboard Shortcuts
+        function handleKeyboard(e) {
+            // Ctrl/Cmd + K for search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                searchInput.focus();
+            }
+            
+            // R for refresh
+            if (e.key === 'r' && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                handleRefresh();
+            }
+        }
+        
+        // Load News from Service
+        async function loadNews(forceRefresh = false) {
+            try {
+                isLoading = true;
+                showLoadingState();
+                
+                const news = await aiNewsService.getNews(forceRefresh);
+                currentNews = news;
+                
+                filterAndRenderNews();
+                
+            } catch (error) {
+                console.error('Failed to load news:', error);
+                showErrorState(error.message);
+            } finally {
+                isLoading = false;
+            }
+        }
+        
+        // Filter and Render News
+        function filterAndRenderNews() {
+            let filteredNews = [...currentNews];
+            
+            // Filter by category
+            if (currentCategory !== 'all') {
+                filteredNews = filteredNews.filter(news => 
+                    news.category === currentCategory
+                );
+            }
+            
+            // Filter by search query
+            if (searchQuery) {
+                filteredNews = filteredNews.filter(news =>
+                    news.title.toLowerCase().includes(searchQuery) ||
+                    news.summary.toLowerCase().includes(searchQuery) ||
+                    news.source.toLowerCase().includes(searchQuery)
+                );
+            }
+            
+            renderNews(filteredNews);
+        }
+        
+        // Show Loading State
+        function showLoadingState() {
+            newsGrid.innerHTML = `
+                <div class="loading">
+                    <i data-lucide="loader"></i>
+                    <span>در حال بارگذاری خبرها...</span>
+                </div>
+            `;
+            setupLucideIcons();
+        }
+        
+        // Show Error State
+        function showErrorState(errorMessage) {
+            newsGrid.innerHTML = `
+                <div class="error">
+                    <i data-lucide="alert-circle"></i>
+                    <p>خطا در بارگذاری خبرها</p>
+                    <p style="font-size: 14px; margin-top: 8px;">${errorMessage}</p>
+                    <button class="retry-btn" onclick="handleRefresh()">
+                        تلاش مجدد
+                    </button>
+                </div>
+            `;
+            setupLucideIcons();
+        }
+        
+        // Render News
+        function renderNews(news = currentNews) {
+            if (news.length === 0) {
+                newsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i data-lucide="file-text"></i>
+                        <p>هیچ خبری با این فیلترها یافت نشد.</p>
+                        <p>لطفاً جستجو یا فیلترهای دیگری امتحان کنید.</p>
+                    </div>
+                `;
+                setupLucideIcons();
+                return;
+            }
+            
+            newsGrid.innerHTML = news.map(newsItem => `
+                <div class="news-card" onclick="openNews('${newsItem.url}')">
+                    <div class="news-header">
+                        <span class="news-category">${getCategoryName(newsItem.category)}</span>
+                        <span class="news-date">${formatDate(newsItem.date)}</span>
+                    </div>
+                    <h3 class="news-title">${newsItem.title}</h3>
+                    <p class="news-summary">${newsItem.summary}</p>
+                    <a href="${newsItem.url}" class="news-source" onclick="event.stopPropagation();" target="_blank">
+                        <i data-lucide="external-link"></i>
+                        <span>مشاهده در ${newsItem.source}</span>
+                    </a>
+                </div>
+            `).join('');
+            
+            setupLucideIcons();
+        }
+        
+        // Get Category Name in Persian
+        function getCategoryName(category) {
+            const names = {
+                'chatgpt': 'ChatGPT',
+                'machine-learning': 'Machine Learning',
+                'robotics': 'Robotics',
+                'deep-learning': 'Deep Learning',
+                'computer-vision': 'Computer Vision',
+                'nlp': 'NLP',
+                'all': 'همه'
+            };
+            return names[category] || category;
+        }
+        
+        // Format Date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 1) return 'امروز';
+            if (diffDays === 2) return 'دیروز';
+            if (diffDays <= 7) return `${diffDays - 1} روز پیش`;
+            if (diffDays <= 30) return `${Math.ceil((diffDays - 1) / 7)} هفته پیش`;
+            return date.toLocaleDateString('fa-IR');
+        }
+        
+        // Open News
+        function openNews(url) {
+            window.open(url, '_blank', 'noopener,noreferrer');
+        }
+        
+        // Show Notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? 'var(--success)' : 'var(--primary-500)'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                box-shadow: var(--shadow-md);
+                z-index: 10000;
+                font-size: 14px;
+                font-weight: 500;
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
